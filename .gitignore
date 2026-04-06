@@ -1,0 +1,5 @@
+node_modules
+server-output.log
+server-error.log
+data/chat-data.json
+.env

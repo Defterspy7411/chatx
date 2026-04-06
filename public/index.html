@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatX</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div>
+            <p class="mini-label">ChatX</p>
+            <h1>Messages</h1>
+          </div>
+          <div class="sidebar-actions">
+            <button id="theme-toggle" type="button" class="secondary small-button">Dark</button>
+            <button id="logout-button" type="button" class="secondary small-button hidden">Logout</button>
+            <div id="session-name" class="session-name">Connecting...</div>
+          </div>
+        </div>
+
+        <section class="sidebar-card">
+          <div class="section-title">
+            <h2>Groups</h2>
+            <span id="group-count" class="pill">0</span>
+          </div>
+          <input id="chat-search-input" type="text" placeholder="Search chats" />
+          <div id="group-list" class="chat-list"></div>
+          <form id="create-group-form" class="small-form">
+            <input id="group-input" type="text" maxlength="24" placeholder="Create private group" />
+            <select id="group-visibility">
+              <option value="private">Private</option>
+              <option value="public">Public</option>
+            </select>
+            <button type="submit">Create</button>
+          </form>
+        </section>
+
+        <section class="sidebar-card">
+          <div class="section-title">
+            <h2>Direct Chats</h2>
+            <span id="direct-count" class="pill">0</span>
+          </div>
+          <div id="direct-list" class="chat-list"></div>
+        </section>
+
+        <section class="sidebar-card">
+          <div class="section-title">
+            <h2>Discover</h2>
+          </div>
+          <div id="discover-list" class="chat-list compact-list"></div>
+        </section>
+      </aside>
+
+      <main class="chat-area">
+        <header class="chat-header">
+          <div>
+            <p id="chat-type-label" class="mini-label">Conversation</p>
+            <h2 id="chat-title">General</h2>
+            <p id="chat-subtitle" class="chat-subtitle">Everyone can chat here</p>
+          </div>
+          <div class="header-actions">
+            <button id="invite-link-button" type="button" class="secondary small-button hidden">Invite</button>
+            <span id="connection-status" class="status">Connecting...</span>
+          </div>
+        </header>
+
+        <div class="chat-toolbar">
+          <input id="message-search-input" type="text" placeholder="Search messages in this chat" />
+        </div>
+
+        <section id="messages" class="messages"></section>
+
+        <section class="composer-wrap">
+          <form id="chat-form" class="composer">
+            <input
+              id="message-input"
+              type="text"
+              maxlength="800"
+              placeholder="Type a message"
+              autocomplete="off"
+              disabled
+            />
+            <button id="send-button" type="submit" disabled>Send</button>
+          </form>
+        </section>
+      </main>
+
+      <aside class="details">
+        <section class="details-card">
+          <div class="section-title">
+            <h2>Members</h2>
+            <span id="member-count" class="pill">0</span>
+          </div>
+          <ul id="member-list" class="member-list"></ul>
+        </section>
+
+        <section class="details-card">
+          <div class="section-title">
+            <h2>Owner Tools</h2>
+          </div>
+          <form id="add-member-form" class="small-form">
+            <input id="add-member-input" type="text" maxlength="24" placeholder="Add member by username" />
+            <button type="submit">Add</button>
+          </form>
+          <button id="delete-group-button" type="button" class="secondary danger-button hidden">
+            Delete Group
+          </button>
+          <div id="request-list" class="request-list"></div>
+        </section>
+
+        <section class="details-card">
+          <div class="section-title">
+            <h2>Admin Tools</h2>
+          </div>
+          <form id="role-form" class="small-form hidden">
+            <input id="role-user-input" type="text" maxlength="24" placeholder="Username" />
+            <select id="role-select">
+              <option value="leader">Leader</option>
+              <option value="user">User</option>
+            </select>
+            <button type="submit">Update</button>
+          </form>
+          <button id="delete-account-button" type="button" class="secondary danger-button hidden">
+            Delete Account
+          </button>
+        </section>
+      </aside>
+    </div>
+
+    <div id="welcome-screen" class="welcome-screen">
+      <form id="welcome-form" class="welcome-card">
+        <p class="mini-label">Welcome</p>
+        <h2 id="auth-title">Start chatting</h2>
+        <p class="welcome-copy">Create an account or log in. The first signup becomes the main admin account.</p>
+        <input id="username-input" type="text" maxlength="24" placeholder="Enter your username" required />
+        <div class="password-row">
+          <input id="password-input" type="password" minlength="4" placeholder="Enter your password" required />
+          <button id="password-toggle" type="button" class="secondary password-toggle">Show</button>
+        </div>
+        <button type="submit">Enter</button>
+        <button id="auth-toggle" type="button" class="secondary">Switch to Login</button>
+      </form>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
