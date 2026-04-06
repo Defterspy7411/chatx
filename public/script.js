@@ -1,6 +1,7 @@
 
 const socket = io();
 
+const appShell = document.getElementById("app-shell");
 const welcomeScreen = document.getElementById("welcome-screen");
 const welcomeForm = document.getElementById("welcome-form");
 const authTitle = document.getElementById("auth-title");
@@ -49,6 +50,9 @@ const roleUserInput = document.getElementById("role-user-input");
 const roleSelect = document.getElementById("role-select");
 
 const toast = document.getElementById("toast");
+const mobileNavButtons = Array.from(document.querySelectorAll(".mobile-nav-button"));
+const mobileChatMeta = document.getElementById("mobile-chat-meta");
+const mobileInfoMeta = document.getElementById("mobile-info-meta");
 
 let authMode = "signup";
 let currentUser = {
@@ -64,6 +68,7 @@ let unreadCounts = {};
 let currentHistory = [];
 let chatSearchTerm = "";
 let messageSearchTerm = "";
+let mobileView = "chat";
 
 usernameInput.value = currentUser.username;
 document.documentElement.setAttribute("data-theme", theme);
@@ -182,6 +187,55 @@ function getInviteLink(groupName) {
   return url.toString();
 }
 
+function isMobileViewport() {
+  return window.innerWidth <= 800;
+}
+
+function setMobileView(nextView) {
+  mobileView = nextView;
+
+  if (appShell) {
+    appShell.dataset.mobileView = isMobileViewport() ? nextView : "desktop";
+  }
+
+  mobileNavButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.mobileView === nextView);
+  });
+}
+
+function syncResponsiveLayout() {
+  if (isMobileViewport()) {
+    setMobileView(mobileView);
+    return;
+  }
+
+  if (appShell) {
+    appShell.dataset.mobileView = "desktop";
+  }
+}
+
+function updateMobileNavCopy() {
+  if (mobileChatMeta) {
+    if (!currentUser.username) {
+      mobileChatMeta.textContent = "Open a chat";
+    } else if (currentChat.type === "group") {
+      mobileChatMeta.textContent = formatLabel(currentChat.id || "general");
+    } else {
+      mobileChatMeta.textContent = currentChat.id || "Direct chat";
+    }
+  }
+
+  if (mobileInfoMeta) {
+    if (!currentUser.username) {
+      mobileInfoMeta.textContent = "Members and account";
+    } else if (currentChat.type === "group") {
+      mobileInfoMeta.textContent = currentChat.isOwner ? "Owner controls" : "Members and roles";
+    } else {
+      mobileInfoMeta.textContent = currentUser.role === "admin" ? "Profile and admin" : "Profile and account";
+    }
+  }
+}
+
 function showLoggedOutState() {
   currentUser = { username: "", role: "" };
   sessionStorage.removeItem("chatx-username");
@@ -202,6 +256,8 @@ function showLoggedOutState() {
   deleteAccountButton.classList.add("hidden");
   roleForm.classList.add("hidden");
   welcomeScreen.classList.remove("hidden");
+  setMobileView("chat");
+  updateMobileNavCopy();
   renderEmptyState("Log in or sign up to continue.");
   renderSidebar();
   renderMembers();
@@ -546,6 +602,12 @@ function renderMembers() {
   }
 }
 
+mobileNavButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setMobileView(button.dataset.mobileView || "chat");
+  });
+});
+
 welcomeForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const payload = {
@@ -662,6 +724,8 @@ socket.on("auth success", ({ username, role }) => {
   deleteAccountButton.classList.remove("hidden");
   welcomeScreen.classList.add("hidden");
   passwordInput.value = "";
+  setMobileView("chat");
+  updateMobileNavCopy();
 
   const inviteGroup = new URLSearchParams(window.location.search).get("invite");
   if (inviteGroup) {
@@ -688,6 +752,7 @@ socket.on("sidebar data", (payload) => {
   }
 
   renderSidebar();
+  updateMobileNavCopy();
 
   if (currentChat.type === "direct") {
     const activeDirect = (sidebarData.directs || []).find((direct) => direct.username === currentChat.id);
@@ -720,6 +785,8 @@ socket.on("chat opened", (payload) => {
   sendButton.disabled = !payload.canChat;
   inviteLinkButton.classList.toggle("hidden", payload.chatType !== "group");
   renderHistory(payload.history || []);
+  setMobileView("chat");
+  updateMobileNavCopy();
 
   if (payload.chatType === "direct") {
     currentMembers = [];
@@ -818,7 +885,11 @@ window.addEventListener("load", () => {
   }
 });
 
+window.addEventListener("resize", syncResponsiveLayout);
+
 if (!currentUser.username) {
+  setMobileView("chat");
+  updateMobileNavCopy();
   renderEmptyState("Log in or sign up to continue.");
   renderMembers();
 } else {
@@ -827,6 +898,10 @@ if (!currentUser.username) {
   logoutButton.classList.remove("hidden");
   deleteAccountButton.classList.remove("hidden");
   connectionStatus.textContent = "Reconnecting...";
+  setMobileView("chat");
+  updateMobileNavCopy();
   renderEmptyState("Restoring your chats...");
   renderMembers();
 }
+
+syncResponsiveLayout();

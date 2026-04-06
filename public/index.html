@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="app">
+    <div id="app-shell" class="app" data-mobile-view="chat">
       <aside class="sidebar">
         <div class="sidebar-top">
           <div>
@@ -21,20 +21,26 @@
           </div>
         </div>
 
-        <section class="sidebar-card">
+        <section class="sidebar-card group-section">
           <div class="section-title">
-            <h2>Groups</h2>
+            <div>
+              <p class="mini-label">Rooms</p>
+              <h2>Groups</h2>
+            </div>
             <span id="group-count" class="pill">0</span>
           </div>
-          <input id="chat-search-input" type="text" placeholder="Search chats" />
+          <p class="section-copy">Keep your main rooms close, then spin up a private or public group in seconds.</p>
+          <div class="group-search-wrap">
+            <input id="chat-search-input" type="text" placeholder="Search groups and chats" />
+          </div>
           <div id="group-list" class="chat-list"></div>
-          <form id="create-group-form" class="small-form">
-            <input id="group-input" type="text" maxlength="24" placeholder="Create private group" />
+          <form id="create-group-form" class="small-form create-group-form">
+            <input id="group-input" type="text" maxlength="24" placeholder="New group name" />
             <select id="group-visibility">
-              <option value="private">Private</option>
-              <option value="public">Public</option>
+              <option value="private">Private room</option>
+              <option value="public">Public room</option>
             </select>
-            <button type="submit">Create</button>
+            <button type="submit">Create Group</button>
           </form>
         </section>
 
@@ -129,6 +135,21 @@
         </section>
       </aside>
     </div>
+
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <button type="button" class="mobile-nav-button active" data-mobile-view="chats">
+        <span class="mobile-nav-label">Inbox</span>
+        <span class="mobile-nav-meta">Groups and DMs</span>
+      </button>
+      <button type="button" class="mobile-nav-button" data-mobile-view="chat">
+        <span class="mobile-nav-label">Thread</span>
+        <span id="mobile-chat-meta" class="mobile-nav-meta">Open a chat</span>
+      </button>
+      <button type="button" class="mobile-nav-button" data-mobile-view="info">
+        <span class="mobile-nav-label">Tools</span>
+        <span id="mobile-info-meta" class="mobile-nav-meta">Members and account</span>
+      </button>
+    </nav>
 
     <div id="welcome-screen" class="welcome-screen">
       <form id="welcome-form" class="welcome-card">
